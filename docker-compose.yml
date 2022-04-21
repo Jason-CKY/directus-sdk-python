@@ -3,8 +3,6 @@ services:
   database:
     container_name: database
     image: postgis/postgis:13-master
-    volumes:
-      - ./data/database:/var/lib/postgresql/data
     networks:
       - directus
     environment:
@@ -15,6 +13,7 @@ services:
   directus:
     container_name: directus
     image: directus/directus:latest
+    restart: on-failure
     ports:
       - 8055:8055
     networks:
@@ -40,16 +39,15 @@ services:
       # PUBLIC_URL: 'https://directus.example.com'
 
   pytest:
-    image: python:3.6
+    image: python:3.8
     volumes:
-      - type: bind
-        source: .
-        target: /directus-sdk-python
+      - .:/directus-sdk-python
     depends_on:
       - directus
       - database
     networks:
       - directus
-      
+    command: python /directus-sdk-python/tests/add_access_token.py && tail -f /dev/null
+
 networks:
   directus:
