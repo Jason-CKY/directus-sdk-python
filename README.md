@@ -161,3 +161,9 @@ client.post_relation({
     "related_collection": "authors"
 })
 ```
+
+
+## TODOs:
+
+* debug test cases
+* add proper pytest
