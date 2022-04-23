@@ -56,3 +56,12 @@ def test_login_modes(collection_name: str, field_name: str, field_type: str):
             "type": field_type
         }
     )
+
+@pytest.mark.parametrize(
+    "collection_name", 
+    [
+        ("test_collection")
+    ]
+)
+def test_delete_collection(collection_name: str):
+    client.delete(f"/collections/{collection_name}")

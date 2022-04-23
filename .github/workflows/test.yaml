@@ -1,0 +1,34 @@
+name: Tests
+on: [push]
+ 
+jobs:
+  build:
+    name: Run Python Tests
+    runs-on: ubuntu-latest
+ 
+    steps:
+ 
+    - uses: actions/checkout@v2
+
+   - uses: isbang/compose-action@v1.0.0
+      with:
+        compose-file: './docker/docker-compose.yml'
+        down-flags: '--volumes'
+
+    - name: Set up Python 3.6
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+ 
+    - name: Install Python dependencies
+      run: |
+        sudo apt install -y $(grep -o ^[^#][[:alnum:]-]* "packages.list")
+        python3 -m pip install --upgrade pip
+        pip3 install -r requirements.txt
+        pip3 install -e .
+ 
+    - name: Test with pytest
+      run: |
+        pytest --exitfirst --verbose --failed-first \
+        --cov=. --cov-report html
+
