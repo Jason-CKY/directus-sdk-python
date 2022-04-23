@@ -10,7 +10,7 @@ jobs:
 
       - uses: isbang/compose-action@v1.0.0
         with:
-          compose-file: './docker/docker-compose.yml'
+          compose-file: './docker-compose.yml'
           down-flags: '--volumes'
 
       - name: Set up Python 3.6
