@@ -38,16 +38,16 @@ services:
       # (see https://docs.directus.io/configuration/config-options/#general)
       # PUBLIC_URL: 'https://directus.example.com'
 
-  pytest:
-    image: python:3.8
-    volumes:
-      - .:/directus-sdk-python
-    depends_on:
-      - directus
-      - database
-    networks:
-      - directus
-    command: python /directus-sdk-python/tests/add_access_token.py && tail -f /dev/null
+  # pytest:
+  #   image: python:3.8
+  #   volumes:
+  #     - .:/directus-sdk-python
+  #   depends_on:
+  #     - directus
+  #     - database
+  #   networks:
+  #     - directus
+  #   command: python /directus-sdk-python/tests/add_access_token.py && tail -f /dev/null
 
 networks:
   directus:

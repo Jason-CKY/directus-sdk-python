@@ -1,9 +1,12 @@
 # import sys
 # sys.path.append('./directus')
 from directus.clients import DirectusClient_V9
-import pytest, uuid
+import pytest
+import os
 
-client = DirectusClient_V9(url="http://directus:8055", email="admin@example.com", password="password")
+url = os.environ.get("BASE_URL", "http://localhost:8055")
+
+client = DirectusClient_V9(url=url, email="admin@example.com", password="password")
 
 @pytest.mark.parametrize(
     "collection_name, pk_type", [

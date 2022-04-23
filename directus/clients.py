@@ -112,7 +112,7 @@ class DirectusClient_V9():
             **kwargs
         )
         if x.status_code != 200:
-            raise AssertionError(x.json())
+            raise AssertionError(x.text)
         
         return x.json()
 
@@ -122,9 +122,9 @@ class DirectusClient_V9():
             headers={"Authorization": f"Bearer {self.get_token()}"},
             verify=self.verify,
             **kwargs
-        ).json()
-        if x.status_code != 200:
-            raise AssertionError(x.json())
+        )
+        if x.status_code != 204:
+            raise AssertionError(x.text)
         
     def patch(self, path, **kwargs):
         x = requests.patch(
@@ -134,8 +134,8 @@ class DirectusClient_V9():
             **kwargs
         )
 
-        if x.status_code != 200:
-            raise AssertionError(x.json())
+        if x.status_code not in [200, 204]:
+            raise AssertionError(x.text)
         
         return x.json()
 
@@ -178,7 +178,7 @@ class DirectusClient_V9():
         This helper function helps to delete every item within the collection.
         '''
         pk_name = self.get_pk_field(collection_name)['field']
-        item_ids = self.get(f"/items/{collection_name}?fields={pk_name}", params={"limit": -1})
+        item_ids = [data['id'] for data in self.get(f"/items/{collection_name}?fields={pk_name}", params={"limit": -1})]
         if len(item_ids) == 0:
             raise AssertionError("No items to delete!")
         for i in range(0, len(item_ids), 100):

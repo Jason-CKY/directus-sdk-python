@@ -2,8 +2,11 @@
 # sys.path.append('./directus')
 from directus.clients import DirectusClient_V9
 import pytest, uuid
+import os
 
-client = DirectusClient_V9(url="http://directus:8055", token="admin")
+url = os.environ.get("BASE_URL", "http://localhost:8055")
+
+client = DirectusClient_V9(url=url, token="admin")
 
 @pytest.mark.parametrize(
     "collection_name, pk_type", [
@@ -82,7 +85,7 @@ def test_delete_item(collection_name: str, id: int):
         ("test_collection", 2, "item2_updated", "I am updated!")
     ]
 )
-def test_create_items(collection_name: str, id: int, name: str, comments: str):
+def test_update_items(collection_name: str, id: int, name: str, comments: str):
     client.patch(
         f"/items/{collection_name}/{id}",
         json={
@@ -191,7 +194,7 @@ def test_post_relations(collection_name: str, field: str, related_collection: st
         ("uuid_pk_collection", [])
     ]
 )
-def test_post_relations(collection_name: str, fk_field_names: list):
+def test_get_fk(collection_name: str, fk_field_names: list):
     fk_fields = [
         field['field'] for field in [
             field for field in client.get_all_fk_fields(collection_name)
