@@ -50,7 +50,7 @@ jobs:
         echo "##[set-output name=path;]${BADGE_PATH}"
         echo "##[set-output name=branch;]${BRANCH}"
       env:
-        COVERAGE: 53.5%
+        COVERAGE: 92%
         BADGE_PATH: ${{ steps.extract_branch.outputs.branch }}/test-badge.svg
         BRANCH: badges
 
