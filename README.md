@@ -2,7 +2,7 @@
     <img src="assets/logo.jpg", width="40", alt="Directus Logo"> Directus Python SDK
 </h1>
 
-![.github/workflows/test.yml](https://raw.githubusercontent.com/Jason-CKY/directus-sdk-python/badges/main/test-badge.svg)
+[![Tests](https://github.com/Jason-CKY/directus-sdk-python/actions/workflows/test.yaml/badge.svg)](https://github.com/Jason-CKY/directus-sdk-python/actions/workflows/test.yaml)
 
 ## Requirements
 
