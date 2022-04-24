@@ -1,5 +1,8 @@
 name: Tests
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - 'badge'
  
 jobs:
   build:
@@ -48,7 +51,9 @@ jobs:
             COLOR=orange
           fi
           
-
+          echo ${total}
+          echo ${COLOR}
+          
           # Generates a GitHub Workflow output named `lines` with a coverage value
           echo "##[set-output name=coverage;]${total}"
           echo "##[set-output name=color;]${COLOR}"
