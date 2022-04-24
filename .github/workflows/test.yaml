@@ -2,7 +2,7 @@ name: Tests
 on:
   push:
     branches-ignore:
-      - 'badge'
+      - 'badges'
  
 jobs:
   build:
@@ -29,9 +29,23 @@ jobs:
           pip3 install -e .
 
       - name: Test with pytest
+        id: pytest
         run: |
           python3 tests/add_access_token.py
-          pytest --exitfirst --verbose --failed-first --cov=.
+          pytest --exitfirst --verbose --failed-first --cov=. --cov-report html
+          total=$(cat htmlcov/index.html | grep -i -C 4 total | tail -n 1 | grep -Eo '[0-9]+%|[0-9]+\.[0-9]+%' | grep -Eo '[0-9]+|[0-9]+\.[0-9]+')
+          if (( $(echo "$total <= 50" | bc -l) )) ; then
+            COLOR=red
+          elif (( $(echo "$total > 80" | bc -l) )); then
+            COLOR=green
+          else
+            COLOR=orange
+          fi
+
+          # Generates a GitHub Workflow output named `lines` with a coverage value
+          echo "##[set-output name=coverage;]${total}"
+          echo "##[set-output name=color;]${COLOR}"
+
       # Get current banch name to use it as dest directory
       - name: Extract branch name
         shell: bash
@@ -41,29 +55,12 @@ jobs:
       - name: Prepare environment
         id: coverage
         run: |
-          total=$(pytest --exitfirst --verbose --failed-first --cov=. | grep -i total | \
-          grep -Eo '[0-9]+%|[0-9]+\.[0-9]+%' | grep -Eo '[0-9]+|[0-9]+\.[0-9]+') | head -n 1
-          if (( $(echo "$total <= 50" | bc -l) )) ; then
-            COLOR=red
-          elif (( $(echo "$total > 80" | bc -l) )); then
-            COLOR=green
-          else
-            COLOR=orange
-          fi
-          
-          echo ${total}
-          echo ${COLOR}
-          
-          # Generates a GitHub Workflow output named `lines` with a coverage value
-          echo "##[set-output name=coverage;]${total}"
-          echo "##[set-output name=color;]${COLOR}"
           # Output values to be used by other steps
           echo "##[set-output name=path;]${BADGE_PATH}"
           echo "##[set-output name=branch;]${BRANCH}"
         env:
           BADGE_PATH: ${{ steps.extract_branch.outputs.branch }}/coverage-badge.svg
           BRANCH: badges
-
 
       - uses: actions/checkout@v3
         with:
@@ -79,8 +76,8 @@ jobs:
       - name: Generate the badge SVG image
         id: badge
         env:
-          COVERAGE: ${{ steps.coverage.outputs.coverage }}
-          COLOR: ${{ steps.coverage.outputs.color }}
+          COVERAGE: ${{ steps.pytest.outputs.coverage }}
+          COLOR: ${{ steps.pytest.outputs.color }}
           BADGE_PATH: ${{ steps.coverage.outputs.path }}
         run: curl "https://img.shields.io/badge/coverage-$COVERAGE%25-$COLOR" > ${BADGE_PATH}
 
